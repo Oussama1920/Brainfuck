@@ -56,25 +56,25 @@ func (b *BrainFuck) Run() error {
 	for b.ip < len(instruction) {
 		switch instruction[b.ip].id.Value {
 		case ">":
-			b.seek(instruction[b.ip].c)
+			b.skate(instruction[b.ip].c)
 		case "<":
-			b.seek(-instruction[b.ip].c)
+			b.skate(-instruction[b.ip].c)
 		case "+":
-			b.inc(instruction[b.ip].c)
+			b.increment(instruction[b.ip].c)
 		case "-":
-			b.dec(instruction[b.ip].c)
+			b.decrement(instruction[b.ip].c)
 		case ".":
 			b.write(instruction[b.ip].c)
 		case ",":
 			b.read(instruction[b.ip].c)
 		case "[":
 			if b.val() == 0 {
-				b.jump(instruction[b.ip].c)
+				b.goTo(instruction[b.ip].c)
 				continue
 			}
 		case "]":
 			if b.val() != 0 {
-				b.jump(instruction[b.ip].c)
+				b.goTo(instruction[b.ip].c)
 				continue
 			}
 		}
@@ -91,27 +91,22 @@ func (b *BrainFuck) cur() int {
 
 // seek method moves the cursor in the memory to given offset
 // this move is relative to current cursor position
-func (b *BrainFuck) seek(offset int) {
+func (b *BrainFuck) skate(offset int) {
 	b.memory.cursor += offset
 }
 
 // jump method forwards the cursor to position p.
-func (b *BrainFuck) jump(p int) {
+func (b *BrainFuck) goTo(p int) {
 	b.ip = p
 }
 
-// reset method resets the cursor and writer to point to invalid state.
-func (b *BrainFuck) reset() {
-	b.memory.cursor = 0
-}
-
 // inc method increments the value of the current cell in memory by v.
-func (b *BrainFuck) inc(v int) {
+func (b *BrainFuck) increment(v int) {
 	b.memory.cell[b.cur()] = (b.memory.cell[b.cur()] + v) % 255
 }
 
 // dec method decrements the value of the current cell in memory by v.
-func (b *BrainFuck) dec(v int) {
+func (b *BrainFuck) decrement(v int) {
 	if b.memory.cell[b.cur()]-v >= 0 {
 		b.memory.cell[b.cur()] -= v
 	} else {

@@ -3,7 +3,6 @@ package brainfuck
 import (
 	"bufio"
 	"io"
-	"unicode"
 )
 
 // LexReader is an interface that wraps Read method.
@@ -83,14 +82,4 @@ func (s *Scanner) next(ch rune) Identifier {
 	default:
 		return Identifier{token: IllegalToken, Value: "<nil>"}
 	}
-}
-
-// isWhitespace returns True if ch is space, tab, new-line.
-func isWhitespace(ch rune) bool {
-	return unicode.IsSpace(ch)
-}
-
-// isLetterDigit returns True if ch is letter or digit.
-func isLetterDigit(ch rune) bool {
-	return unicode.IsLetter(ch) || unicode.IsDigit(ch)
 }

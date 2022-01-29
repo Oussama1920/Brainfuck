@@ -39,9 +39,9 @@ func NewParser(r io.Reader) *Parser {
 	return &Parser{s: NewScanner(r)}
 }
 
-func (p *Parser) Parse() []*Instruction {
+func (parser *Parser) Parse() []*Instruction {
 	for {
-		tok := p.scan()
+		tok := parser.scan()
 		if tok.token == IllegalToken {
 			break
 		}
@@ -53,18 +53,18 @@ func (p *Parser) Parse() []*Instruction {
 			op_dec_val,
 			op_out,
 			op_in:
-			p.addInst(tok)
+			parser.AddInstruction(tok)
 		case op_jmp_fwd:
-			openLoop := p.buildInst(tok, 0)
-			p.stack.Push(openLoop)
+			openLoop := parser.BuildInstruction(tok, 0)
+			parser.stack.Push(openLoop)
 		case op_jmp_bck:
-			openLoop := p.stack.Pop().(int)
-			closeLoop := p.buildInst(tok, openLoop)
-			p.instruction[openLoop].c = closeLoop
+			openLoop := parser.stack.Pop().(int)
+			closeLoop := parser.BuildInstruction(tok, openLoop)
+			parser.instruction[openLoop].c = closeLoop
 		}
 
 	}
-	return p.instruction
+	return parser.instruction
 }
 
 // scan returns next token unit.
@@ -88,7 +88,7 @@ func (p *Parser) unscan() {
 // addInst adds instructions to []*inst of Parser
 // for efficiency, if there are multiple occurrences of the
 // same token consecutively, we will fold it.
-func (p *Parser) addInst(t Identifier) int {
+func (p *Parser) AddInstruction(t Identifier) int {
 	// token occurrence count
 	c := 1
 	for {
@@ -99,11 +99,11 @@ func (p *Parser) addInst(t Identifier) int {
 		}
 		c++
 	}
-	return p.buildInst(t, c)
+	return p.BuildInstruction(t, c)
 }
 
 // buildInst creates a instruction from the given literals.
-func (p *Parser) buildInst(id Identifier, c int) int {
+func (p *Parser) BuildInstruction(id Identifier, c int) int {
 	// build instruction
 	instruction := &Instruction{
 		id: id,
