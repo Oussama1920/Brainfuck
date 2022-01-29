@@ -52,29 +52,29 @@ func NewInterpreter(i io.Reader, w io.Writer, parser *Parser) *BrainFuck {
 // err != nil if error happen during read/print operations
 // output returns in format of bytes
 func (b *BrainFuck) Run() error {
-	inst := b.p.Parse()
-	for b.ip < len(inst) {
-		switch inst[b.ip].id.Value {
+	instruction := b.p.Parse()
+	for b.ip < len(instruction) {
+		switch instruction[b.ip].id.Value {
 		case ">":
-			b.seek(inst[b.ip].c)
+			b.seek(instruction[b.ip].c)
 		case "<":
-			b.seek(-inst[b.ip].c)
+			b.seek(-instruction[b.ip].c)
 		case "+":
-			b.inc(inst[b.ip].c)
+			b.inc(instruction[b.ip].c)
 		case "-":
-			b.dec(inst[b.ip].c)
+			b.dec(instruction[b.ip].c)
 		case ".":
-			b.write(inst[b.ip].c)
+			b.write(instruction[b.ip].c)
 		case ",":
-			b.read(inst[b.ip].c)
+			b.read(instruction[b.ip].c)
 		case "[":
 			if b.val() == 0 {
-				b.jump(inst[b.ip].c)
+				b.jump(instruction[b.ip].c)
 				continue
 			}
 		case "]":
 			if b.val() != 0 {
-				b.jump(inst[b.ip].c)
+				b.jump(instruction[b.ip].c)
 				continue
 			}
 		}
