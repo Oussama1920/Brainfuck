@@ -5,36 +5,24 @@ import (
 	"io"
 )
 
-// LexReader is an interface that wraps Read method.
-// Read method reads and return the next rune from the input.
-type LexReader interface {
+// LexReader is an interface that contain our  read() method.
+type LexicalReader interface {
 	read() rune
 }
 
-// LexScanner is the interface that adds Unread method to the
-// basic LexReader.
-//
-// Unread causes the next call to the Read method return the same
-// rune as the same previous call to Read.
-type LexScanner interface {
-	LexReader
-	unread() error
-}
-
-// Scanner implements a tokenizer.
+// Scanner impliment a token reader.
 type Scanner struct {
 	r *bufio.Reader
 }
 
-// NewScanner returns a new instance of Scanner.
+// NewScanner gives  an instance of the Scanner.
 func NewScanner(r io.Reader) *Scanner {
 	return &Scanner{
 		bufio.NewReader(r),
 	}
 }
 
-// Read method reads the next rune from r.
-// err != nil only if there is no more rune to read.
+// Read method return the next rune from the reader and return EOF caracter if no more runes.
 func (s *Scanner) read() rune {
 	ch, _, err := s.r.ReadRune()
 	if err != nil {
@@ -43,15 +31,7 @@ func (s *Scanner) read() rune {
 	return ch
 }
 
-// unread re-buffers the last read data.
-func (s *Scanner) unread() error {
-	if err := s.r.UnreadRune(); err != nil {
-		return err
-	}
-	return nil
-}
-
-// Scan prepare and returns the next Token.
+// Scan method returns the next Token from the reader.
 func (s *Scanner) Scan() Identifier {
 
 	// read next rune
@@ -60,6 +40,7 @@ func (s *Scanner) Scan() Identifier {
 	return s.next(ch)
 }
 
+// next method is used in scanning
 func (s *Scanner) next(ch rune) Identifier {
 	// Check against individual code points next.
 	switch ch {

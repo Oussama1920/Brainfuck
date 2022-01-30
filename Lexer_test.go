@@ -5,38 +5,27 @@ import (
 	"testing"
 )
 
-func TestScanner_Read(t *testing.T) {
-	r := strings.NewReader("<>   this is string [+++]")
-	s := NewScanner(r)
-	token := s.Scan()
+func TestScanner(t *testing.T) {
+	for _, tt := range []struct {
+		name   string
+		wanted string
+		input  string
+		length int
+	}{
+		{"test Read", "<>", "<>", 2},
+		{"test Read", "<>++--", "<>++--", 6},
+		{"test Read", "[+]", "[+]", 3},
+	} {
+		n := 0
+		code := strings.NewReader(tt.input)
+		scanner := NewScanner(code)
+		for n < tt.length {
+			token := scanner.Scan()
+			if token.Value != string(tt.wanted[n]) {
+				t.Errorf("wrong output, want %s,got %s", tt.wanted, token.Value)
+			}
+			n++
+		}
 
-	if token.Value != "<" {
-		t.Errorf("expect < given %q", token.Value)
 	}
-}
-
-func TestScanner_Scan(t *testing.T) {
-	//below string contains long white space and three runes
-	r := strings.NewReader("[+]")
-	s := NewScanner(r)
-
-	// read  [ rune
-	token := s.Scan()
-
-	if token.Value != "[" {
-		t.Errorf("expect [ given %q", token.Value)
-	}
-
-	// read  + rune
-	token = s.Scan()
-	if token.Value != "+" {
-		t.Errorf("expect + given %q", token.Value)
-	}
-
-	// read the last rune
-	token = s.Scan()
-	if token.Value != "]" {
-		t.Errorf("expect ] given %q", token.Value)
-	}
-
 }
