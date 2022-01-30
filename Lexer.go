@@ -45,22 +45,22 @@ func (s *Scanner) next(ch rune) Identifier {
 	// Check against individual code points next.
 	switch ch {
 	case '>':
-		return Identifier{token: op_inc_dp, Value: string(ch)}
+		return Identifier{Token: op_inc_dp, Value: string(ch)}
 	case '<':
-		return Identifier{token: op_dec_dp, Value: string(ch)}
+		return Identifier{Token: op_dec_dp, Value: string(ch)}
 	case '+':
-		return Identifier{token: op_inc_val, Value: string(ch)}
+		return Identifier{Token: op_inc_val, Value: string(ch)}
 	case '-':
-		return Identifier{token: op_dec_val, Value: string(ch)}
+		return Identifier{Token: op_dec_val, Value: string(ch)}
 	case '[':
-		return Identifier{token: op_jmp_fwd, Value: string(ch)}
+		return Identifier{Token: op_jmp_fwd, Value: string(ch)}
 	case ']':
-		return Identifier{token: op_jmp_bck, Value: string(ch)}
+		return Identifier{Token: op_jmp_bck, Value: string(ch)}
 	case '.':
-		return Identifier{token: op_out, Value: string(ch)}
+		return Identifier{Token: op_out, Value: string(ch)}
 	case ',':
-		return Identifier{token: op_in, Value: string(ch)}
+		return Identifier{Token: op_in, Value: string(ch)}
 	default:
-		return Identifier{token: IllegalToken, Value: "<nil>"}
+		return Identifier{Token: IllegalToken, Value: "<nil>"}
 	}
 }

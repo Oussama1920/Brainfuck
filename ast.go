@@ -12,6 +12,7 @@ const (
 	op_in              // ,
 	op_jmp_fwd         // [
 	op_jmp_bck         // ]
+	op_sqr_dp          // ²
 )
 
 // EOF is for end of file (stream).
@@ -23,7 +24,7 @@ type Token int
 // Identifier represents a lexical tokens.
 type Identifier struct {
 	// the type of the token.
-	token Token
+	Token Token
 
 	// The parsed value of the token.
 	Value string

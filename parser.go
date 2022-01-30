@@ -17,42 +17,69 @@ type Instruction struct {
 	additionalData int
 }
 
-// Parser builds AST (abstract structure tree).
-// Parser uses Stack to keep track of loops
-// it contains the Scanner to tokenize the data from input
+// Parser builds an abstract structure tree.
+// Parser uses Stack to keep track of loops using push and pop methods
+// s is the scanner to tokenerize the input
 // buf is an internal struct to process input at a time of scan
-// inst is an slice, which every member is one single instruction
+// DesactivatedOperation will contain not supported operation for this instance
+
 type Parser struct {
-	s           *Scanner
-	instruction []*Instruction
-	buf         Buf
-	stack       Stack
+	s                     *Scanner
+	instruction           []*Instruction
+	buf                   Buf
+	stack                 Stack
+	DesactivatedOperation []DesactivatedOperation
 }
 type Buf struct {
 	token  Identifier // last read token
 	isUsed bool       // whether the token buffer is in use.
 }
+type DesactivatedOperation struct {
+	operator string
+}
 
 // NewParser creates new Parser from input r.
 func NewParser(r io.Reader) *Parser {
-	return &Parser{s: NewScanner(r)}
+	desactivatedOperation := []DesactivatedOperation{}
+	desactivatedOperation = append(desactivatedOperation, DesactivatedOperation{"²"})
+	return &Parser{s: NewScanner(r), DesactivatedOperation: desactivatedOperation}
 }
 
 func (parser *Parser) Parse() []*Instruction {
 	for {
 		tok := parser.scan()
-		if tok.token == IllegalToken {
+		if tok.Token == IllegalToken {
 			break
 		}
-		switch tok.token {
-		case
-			op_inc_dp,
-			op_dec_dp,
-			op_inc_val,
-			op_dec_val,
-			op_out,
-			op_in:
-			parser.AddInstruction(tok)
+		switch tok.Token {
+		case op_inc_dp:
+			if parser.CheckActivation(">") {
+				parser.AddInstruction(tok)
+			}
+		case op_dec_dp:
+			if parser.CheckActivation("<") {
+				parser.AddInstruction(tok)
+			}
+		case op_inc_val:
+			if parser.CheckActivation("+") {
+				parser.AddInstruction(tok)
+			}
+		case op_dec_val:
+			if parser.CheckActivation("-") {
+				parser.AddInstruction(tok)
+			}
+		case op_out:
+			if parser.CheckActivation(".") {
+				parser.AddInstruction(tok)
+			}
+		case op_in:
+			if parser.CheckActivation(",") {
+				parser.AddInstruction(tok)
+			}
+		case op_sqr_dp:
+			if parser.CheckActivation("²") {
+				parser.AddInstruction(tok)
+			}
 		case op_jmp_fwd:
 			openLoop := parser.BuildInstruction(tok, 0)
 			parser.stack.Push(openLoop)
@@ -92,7 +119,7 @@ func (p *Parser) AddInstruction(t Identifier) int {
 	c := 1
 	for {
 		next := p.scan()
-		if next.token != t.token {
+		if next.Token != t.Token {
 			p.unscan()
 			break
 		}
@@ -111,4 +138,39 @@ func (p *Parser) BuildInstruction(id Identifier, additionalData int) int {
 	// add inst to instruction list
 	p.instruction = append(p.instruction, instruction)
 	return len(p.instruction) - 1
+}
+
+// checkActivation checks if operator is active or no
+// returns true if operator is activated
+func (p *Parser) CheckActivation(operator string) bool {
+	for _, identifier := range p.DesactivatedOperation {
+		if identifier.operator == operator {
+			return false
+		}
+	}
+	return true
+}
+
+// Desactivate method is to desactivate operator
+func (p *Parser) Desactivate(operator string) {
+	p.DesactivatedOperation = append(p.DesactivatedOperation, DesactivatedOperation{operator})
+}
+
+// Activate method is to desactivate operator
+func (p *Parser) Activate(operator string) {
+	// will contain the index of the operator to delete
+	index := 0
+	// only for safe append
+	counter := 0
+	// check if already desactivated
+	for i, identifier := range p.DesactivatedOperation {
+		if identifier.operator == operator {
+			index = i
+			counter++
+		}
+	}
+	if counter > 0 {
+		p.DesactivatedOperation = append(p.DesactivatedOperation[:index], p.DesactivatedOperation[index+1:]...)
+
+	}
 }
