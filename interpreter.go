@@ -66,6 +66,8 @@ func (bf *BrainFuck) Run() error {
 			bf.read(instruction[bf.ip].additionalData)
 		case ".":
 			bf.write(instruction[bf.ip].additionalData)
+		case "²":
+			bf.sqr()
 		case "[":
 			if bf.val() == 0 {
 				bf.goTo(instruction[bf.ip].additionalData)
@@ -81,6 +83,12 @@ func (bf *BrainFuck) Run() error {
 	}
 
 	return bf.err
+}
+
+// sqr method calculate the square of the value of the current cell in memorry
+// value is modulo [255]
+func (bf *BrainFuck) sqr() {
+	bf.memory.cell[bf.cur()] = (bf.memory.cell[bf.cur()] * bf.memory.cell[bf.cur()]) % 255
 }
 
 // cur method returns the position of current cursor in the memory

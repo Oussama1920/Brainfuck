@@ -76,7 +76,7 @@ func (parser *Parser) Parse() []*Instruction {
 			if parser.CheckActivation(",") {
 				parser.AddInstruction(tok)
 			}
-		case op_sqr_dp:
+		case op_sqr_val:
 			if parser.CheckActivation("²") {
 				parser.AddInstruction(tok)
 			}

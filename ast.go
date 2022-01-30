@@ -12,7 +12,7 @@ const (
 	op_in              // ,
 	op_jmp_fwd         // [
 	op_jmp_bck         // ]
-	op_sqr_dp          // ²
+	op_sqr_val         // ²
 )
 
 // EOF is for end of file (stream).
