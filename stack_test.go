@@ -2,28 +2,44 @@ package brainfuck
 
 import "testing"
 
+var testPushPop1 = []int{10, 20, 30, 40, 50}
+var testPushPop2 = []int{10, 20, 30, 40, 50, 60, 70, 80}
+
 func TestStack_Push(t *testing.T) {
-	s := Stack{}
-	s.Push(101)
-	s.Push("simple text value ")
-	s.Push(1.95)
-	if s.Len() != 3 {
-		t.Errorf("wrong stack length, got %d", s.Len())
+	for _, tt := range []struct {
+		input        []int
+		wantedLength int
+	}{
+		{testPushPop1, 5},
+		{testPushPop2, 8},
+	} {
+		s := Stack{}
+		for _, item := range tt.input {
+			s.Push(item)
+		}
+		if s.Len() != tt.wantedLength {
+			t.Errorf("wrong stack length, got %d", s.Len())
+		}
 	}
 }
-
 func TestStack_Pop(t *testing.T) {
-	s := Stack{}
-	s.Push(101)
-	s.Push("simple text value")
-	s.Push(1.95)
-	pop1 := s.Pop()
-	if pop1 != 1.95 {
-		t.Errorf("wrong value, got %d", pop1)
+	for _, tt := range []struct {
+		input        []int
+		wantedLength int
+	}{
+		{testPushPop1, 5},
+		{testPushPop2, 8},
+	} {
+		s := Stack{}
+		for _, item := range tt.input {
+			s.Push(item)
+		}
+		for i, _ := range tt.input {
+			pop := s.Pop()
+			if pop != tt.input[len(tt.input)-i-1] {
+				t.Errorf("wrong value, want: %d, got %s", tt.input[len(tt.input)-i-1], pop)
+			}
+		}
 	}
 
-	pop2 := s.Pop()
-	if pop2 != "simple text value" {
-		t.Errorf("wrong value, got %s", pop2)
-	}
 }
