@@ -6,7 +6,7 @@ import (
 )
 
 func TestParser_Parse(t *testing.T) {
-	input := strings.NewReader("+++++ -- [-]")
+	input := strings.NewReader("+++++--[-]")
 	p := NewParser(input)
 	instructions := p.Parse()
 	// since we are folding instructions
@@ -51,7 +51,7 @@ func TestInnerLoops(t *testing.T) {
 }
 
 func Test_MoveBetweenCells(t *testing.T) {
-	input := strings.NewReader("+>>>+++++++>>+++ --<<")
+	input := strings.NewReader("+>>>+++++++>>+++--<<")
 	p := NewParser(input)
 	instructions := p.Parse()
 	expected := []*Instruction{

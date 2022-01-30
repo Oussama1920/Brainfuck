@@ -5,19 +5,19 @@ import (
 )
 
 // interface to write out the execution results
-type Writer interface {
+type IWriter interface {
 	Write() io.Writer
 }
 
 // interface for an interpreter
 // Run method executes created instructions by Parser
 type Interpreter interface {
-	Writer
+	IWriter
 	Run() error
 }
 
 // Memory capacity
-const MemorySize int = 3000
+const MemorySize int = 5000
 
 // BrainFuck is an implementation of the Interpreter
 // it has internal parser which builds instructions from the input
@@ -25,9 +25,9 @@ const MemorySize int = 3000
 // memory struct keeps memory data and cursor to move between memory cells and update their values
 // err != nil if any error happen during the print/read operation
 type BrainFuck struct {
-	p      *Parser
-	w      io.Writer
-	i      io.Reader
+	parser *Parser
+	writer io.Writer
+	reader io.Reader
 	buf    []byte
 	ip     int
 	err    error
@@ -38,79 +38,78 @@ type Memory struct {
 	cursor int
 }
 
-// NewInterpreter creates new Interpreter instance and initialize it's internal Parser.
-func NewInterpreter(i io.Reader, w io.Writer, parser *Parser) *BrainFuck {
+// NewInterpreter creates new Interpreter instance .
+func NewInterpreter(r io.Reader, w io.Writer, parser *Parser) *BrainFuck {
 	return &BrainFuck{
-		p:   parser,
-		w:   w,
-		i:   i,
-		buf: make([]byte, 1),
+		parser: parser,
+		writer: w,
+		reader: r,
+		buf:    make([]byte, 1),
 	}
 }
 
 // Run method executes the instructions
-// err != nil if error happen during read/print operations
-// output returns in format of bytes
-func (b *BrainFuck) Run() error {
-	instruction := b.p.Parse()
-	for b.ip < len(instruction) {
-		switch instruction[b.ip].id.Value {
-		case ">":
-			b.skate(instruction[b.ip].c)
-		case "<":
-			b.skate(-instruction[b.ip].c)
-		case "+":
-			b.increment(instruction[b.ip].c)
+func (bf *BrainFuck) Run() error {
+	instruction := bf.parser.Parse()
+	for bf.ip < len(instruction) {
+		switch instruction[bf.ip].id.Value {
 		case "-":
-			b.decrement(instruction[b.ip].c)
-		case ".":
-			b.write(instruction[b.ip].c)
+			bf.decrement(instruction[bf.ip].c)
+		case "+":
+			bf.increment(instruction[bf.ip].c)
+		case "<":
+			bf.skate(-instruction[bf.ip].c)
+		case ">":
+			bf.skate(instruction[bf.ip].c)
 		case ",":
-			b.read(instruction[b.ip].c)
+			bf.read(instruction[bf.ip].c)
+		case ".":
+			bf.write(instruction[bf.ip].c)
 		case "[":
-			if b.val() == 0 {
-				b.goTo(instruction[b.ip].c)
+			if bf.val() == 0 {
+				bf.goTo(instruction[bf.ip].c)
 				continue
 			}
 		case "]":
-			if b.val() != 0 {
-				b.goTo(instruction[b.ip].c)
+			if bf.val() != 0 {
+				bf.goTo(instruction[bf.ip].c)
 				continue
 			}
 		}
-		b.ip++
+		bf.ip++
 	}
 
-	return b.err
+	return bf.err
 }
 
 // curr method returns the position of current cursor in the memory
-func (b *BrainFuck) cur() int {
-	return b.memory.cursor
+func (bf *BrainFuck) cur() int {
+	return bf.memory.cursor
 }
 
-// seek method moves the cursor in the memory to given offset
-// this move is relative to current cursor position
-func (b *BrainFuck) skate(offset int) {
-	b.memory.cursor += offset
+// skate method moves the current cursor in the memory to given offset
+func (bf *BrainFuck) skate(offset int) {
+	bf.memory.cursor += offset
 }
 
-// jump method forwards the cursor to position p.
-func (b *BrainFuck) goTo(p int) {
-	b.ip = p
+// goTo method forwards the cursor to position p.
+func (bf *BrainFuck) goTo(p int) {
+	bf.ip = p
 }
 
 // inc method increments the value of the current cell in memory by v.
-func (b *BrainFuck) increment(v int) {
-	b.memory.cell[b.cur()] = (b.memory.cell[b.cur()] + v) % 255
+// value is modulo [255]
+func (bf *BrainFuck) increment(v int) {
+	bf.memory.cell[bf.cur()] = (bf.memory.cell[bf.cur()] + v) % 255
 }
 
-// dec method decrements the value of the current cell in memory by v.
-func (b *BrainFuck) decrement(v int) {
-	if b.memory.cell[b.cur()]-v >= 0 {
-		b.memory.cell[b.cur()] -= v
+// decrement method decrements the value of the current cell in memory by v
+// value is modulo [255]
+func (bf *BrainFuck) decrement(v int) {
+	if bf.memory.cell[bf.cur()]-v >= 0 {
+		bf.memory.cell[bf.cur()] -= v
 	} else {
-		b.memory.cell[b.cur()] = 256 + b.memory.cell[b.cur()] - v
+		bf.memory.cell[bf.cur()] = 256 + bf.memory.cell[bf.cur()] - v
 	}
 }
 
@@ -119,28 +118,26 @@ func (b *BrainFuck) val() int {
 	return b.memory.cell[b.cur()]
 }
 
-// doPrint method prints the value in current cell of the memory
-// if any error happen during the Write operation err property will be set.
-func (b *BrainFuck) write(times int) bool {
-	b.buf[0] = byte(b.val())
+// write method writes the value in current cell of the memory
+func (bf *BrainFuck) write(times int) bool {
+	bf.buf[0] = byte(bf.val())
 	for i := 0; i < times; i++ {
-		if _, err := b.w.Write(b.buf); err != nil {
-			b.err = err
+		if _, err := bf.writer.Write(bf.buf); err != nil {
+			bf.err = err
 			return false
 		}
 	}
 	return true
 }
 
-// doRead reads input from io
-// if any error happen during the Read operation err property will be set.
-func (b *BrainFuck) read(times int) bool {
+// read method reads input buf
+func (bf *BrainFuck) read(times int) bool {
 	for i := 0; i < times; i++ {
-		if _, err := b.i.Read(b.buf); err != nil {
-			b.err = err
+		if _, err := bf.reader.Read(bf.buf); err != nil {
+			bf.err = err
 			return false
 		}
-		b.memory.cell[b.cur()] = int(b.buf[0])
+		bf.memory.cell[bf.cur()] = int(bf.buf[0])
 	}
 	return true
 }

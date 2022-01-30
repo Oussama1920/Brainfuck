@@ -17,11 +17,8 @@ func TestScanner_Read(t *testing.T) {
 
 func TestScanner_Scan(t *testing.T) {
 	//below string contains long white space and three runes
-	r := strings.NewReader("        [+]")
+	r := strings.NewReader("[+]")
 	s := NewScanner(r)
-
-	// this consumes all white spaces
-	s.Scan()
 
 	// read  [ rune
 	token := s.Scan()
