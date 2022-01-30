@@ -15,11 +15,11 @@ func TestParser_Parse(t *testing.T) {
 		t.Errorf("wrong length, expected 5 got %+v", len(instructions))
 	}
 	expected := []*Instruction{
-		{c: 5, id: Identifier{token: op_inc_val, Value: "+"}},
-		{c: 2, id: Identifier{token: op_dec_val, Value: "-"}},
-		{c: 4, id: Identifier{token: op_jmp_fwd, Value: "["}},
-		{c: 1, id: Identifier{token: op_dec_val, Value: "-"}},
-		{c: 2, id: Identifier{token: op_jmp_bck, Value: "]"}},
+		{additionalData: 5, id: Identifier{token: op_inc_val, Value: "+"}},
+		{additionalData: 2, id: Identifier{token: op_dec_val, Value: "-"}},
+		{additionalData: 4, id: Identifier{token: op_jmp_fwd, Value: "["}},
+		{additionalData: 1, id: Identifier{token: op_dec_val, Value: "-"}},
+		{additionalData: 2, id: Identifier{token: op_jmp_bck, Value: "]"}},
 	}
 	for i, v := range expected {
 		if *v != *instructions[i] {
@@ -33,14 +33,14 @@ func TestInnerLoops(t *testing.T) {
 	p := NewParser(input)
 	instructions := p.Parse()
 	expected := []*Instruction{
-		{id: Identifier{token: op_dec_val, Value: "-"}, c: 1},
-		{id: Identifier{token: op_jmp_fwd, Value: "["}, c: 7},
-		{id: Identifier{token: op_dec_val, Value: "-"}, c: 2},
-		{id: Identifier{token: op_jmp_fwd, Value: "["}, c: 5},
-		{id: Identifier{token: op_inc_val, Value: "+"}, c: 1},
-		{id: Identifier{token: op_jmp_bck, Value: "]"}, c: 3},
-		{id: Identifier{token: op_dec_val, Value: "-"}, c: 2},
-		{id: Identifier{token: op_jmp_bck, Value: "]"}, c: 1},
+		{id: Identifier{token: op_dec_val, Value: "-"}, additionalData: 1},
+		{id: Identifier{token: op_jmp_fwd, Value: "["}, additionalData: 7},
+		{id: Identifier{token: op_dec_val, Value: "-"}, additionalData: 2},
+		{id: Identifier{token: op_jmp_fwd, Value: "["}, additionalData: 5},
+		{id: Identifier{token: op_inc_val, Value: "+"}, additionalData: 1},
+		{id: Identifier{token: op_jmp_bck, Value: "]"}, additionalData: 3},
+		{id: Identifier{token: op_dec_val, Value: "-"}, additionalData: 2},
+		{id: Identifier{token: op_jmp_bck, Value: "]"}, additionalData: 1},
 	}
 
 	for i, v := range expected {
@@ -55,13 +55,13 @@ func Test_MoveBetweenCells(t *testing.T) {
 	p := NewParser(input)
 	instructions := p.Parse()
 	expected := []*Instruction{
-		{id: Identifier{token: op_inc_val, Value: "+"}, c: 1},
-		{id: Identifier{token: op_inc_dp, Value: ">"}, c: 3},
-		{id: Identifier{token: op_inc_val, Value: "+"}, c: 7},
-		{id: Identifier{token: op_inc_dp, Value: ">"}, c: 2},
-		{id: Identifier{token: op_inc_val, Value: "+"}, c: 3},
-		{id: Identifier{token: op_dec_val, Value: "-"}, c: 2},
-		{id: Identifier{token: op_dec_dp, Value: "<"}, c: 2},
+		{id: Identifier{token: op_inc_val, Value: "+"}, additionalData: 1},
+		{id: Identifier{token: op_inc_dp, Value: ">"}, additionalData: 3},
+		{id: Identifier{token: op_inc_val, Value: "+"}, additionalData: 7},
+		{id: Identifier{token: op_inc_dp, Value: ">"}, additionalData: 2},
+		{id: Identifier{token: op_inc_val, Value: "+"}, additionalData: 3},
+		{id: Identifier{token: op_dec_val, Value: "-"}, additionalData: 2},
+		{id: Identifier{token: op_dec_dp, Value: "<"}, additionalData: 2},
 	}
 
 	for i, v := range expected {

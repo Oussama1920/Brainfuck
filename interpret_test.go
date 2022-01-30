@@ -6,32 +6,34 @@ import (
 	"testing"
 )
 
+func TestBrainFuckMachine(t *testing.T) {
+	for _, tt := range []struct {
+		name   string
+		wanted string
+		input  string
+	}{
+		{"Print Hello World", "Hello, World", HelloWordInBrainFuck},
+		{"Print fibonacci", "1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89", FibonacciInBrainfFuck},
+		{"Print factorial", "0! = 1\n1! = 1\n2! = 2\n3! = 6\n4! = 24\n5! = 120\n6! = 210\n", FactorialInBrainFuck},
+	} {
+		code := strings.NewReader(tt.input)
+		parser := NewParser(code)
+		input := new(bytes.Buffer)
+		output := new(bytes.Buffer)
+		bfm := NewInterpreter(input, output, parser)
+		_ = bfm.Run()
 
-func TestBrainFuckMachine_LoopOperation(t *testing.T) {
-	code := strings.NewReader("----[---->+<]>++.+.+.+.")
-	parser := NewParser(code)
-	input := new(bytes.Buffer)
-	output := new(bytes.Buffer)
-	bfm := NewInterpreter(input, output, parser)
-	_ = bfm.Run()
-
-	if output.String() != "ABCD" {
-		t.Errorf("wrong output, got %s", output.String())
+		if output.String() != tt.wanted {
+			t.Errorf("wrong output, want %s,got %s", tt.wanted, output.String())
+		}
 	}
-
 }
 
-func TestBrainFuckMachine_PrintHelloWorld(t *testing.T) {
-	input := `++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.`
-	code := strings.NewReader(input)
-	parser := NewParser(code)
-	i := new(bytes.Buffer)
-	o := new(bytes.Buffer)
-	bfm := NewInterpreter(i, o, parser)
-	_ = bfm.Run()
+// source : https://therenegadecoder.com/code/hello-world-in-brainfuck/
+var HelloWordInBrainFuck = `>++++++++[<+++++++++>-]<.>++++[<+++++++>-]<+.+++++++..+++.>>++++++[<+++++++>-]<++.------------.>++++++[<+++++++++>-]<+.<.+++.------.--------.>>>++++[<++++++++>-]<+`
 
-	if o.String() != "Hello World!\n" {
-		t.Errorf("wrong output, got %s", o.String())
-	}
+// source : http://esoteric.sange.fi/brainfuck/bf-source/prog/fibonacci.txt
+var FibonacciInBrainfFuck = `+++++++++++>+>>>>++++++++++++++++++++++++++++++++++++++++++++>++++++++++++++++++++++++++++++++<<<<<<[>[>>>>>>+>+<<<<<<<-]>>>>>>>[<<<<<<<+>>>>>>>-]<[>++++++++++[-<-[>>+>+<<<-]>>>[<<<+>>>-]+<[>[-]<[-]]>[<<[>>>+<<<-]>>[-]]<<]>>>[>>+>+<<<-]>>>[<<<+>>>-]+<[>[-]<[-]]>[<<+>>[-]]<<<<<<<]>>>>>[++++++++++++++++++++++++++++++++++++++++++++++++.[-]]++++++++++<[->-<]>++++++++++++++++++++++++++++++++++++++++++++++++.[-]<<<<<<<<<<<<[>>>+>+<<<<-]>>>>[<<<<+>>>>-]<-[>>.>.<<<[-]]<<[>>+>+<<<-]>>>[<<<+>>>-]<<[<+>-]>[<+>-]<<<-]`
 
-}
+// source : http://progopedia.com/example/factorial/18/
+var FactorialInBrainFuck = `+++++++++++++++++++++++++++++++++>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++>++++++++++>+++++++>>+<<[>++++++++++++++++++++++++++++++++++++++++++++++++.------------------------------------------------<<<<.-.>.<.+>>>>>>>++++++++++<<[->+>-[>+>>]>[+[-<+>]>+>>]<<<<<<]>[<+>-]>[-]>>>++++++++++<[->-[>+>>]>[+[-<+>]>+>>]<<<<<]>[-]>>[++++++++++++++++++++++++++++++++++++++++++++++++.[-]]<[++++++++++++++++++++++++++++++++++++++++++++++++.[-]]<<<++++++++++++++++++++++++++++++++++++++++++++++++.[-]<<<<<<.>>+>[>>+<<-]>>[<<<[>+>+<<-]>>[<<+>>-]>-]<<<<-]`

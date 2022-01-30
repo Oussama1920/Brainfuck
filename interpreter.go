@@ -4,6 +4,9 @@ import (
 	"io"
 )
 
+// Memory capacity
+const MemorySize int = 5000
+
 // interface to write out the execution results
 type IWriter interface {
 	Write() io.Writer
@@ -16,14 +19,12 @@ type Interpreter interface {
 	Run() error
 }
 
-// Memory capacity
-const MemorySize int = 5000
-
-// BrainFuck is an implementation of the Interpreter
-// it has internal parser which builds instructions from the input
-// result is written into w
-// memory struct keeps memory data and cursor to move between memory cells and update their values
-// err != nil if any error happen during the print/read operation
+// BrainFuck is our implementation for the Interpreter
+// parser is to build the instructions from the input
+// writer is to contain the output
+// reader is the input
+// err is to contain errors in read or write
+// Memory is to identify the size of the cell and position of it's cursor
 type BrainFuck struct {
 	parser *Parser
 	writer io.Writer
@@ -54,25 +55,25 @@ func (bf *BrainFuck) Run() error {
 	for bf.ip < len(instruction) {
 		switch instruction[bf.ip].id.Value {
 		case "-":
-			bf.decrement(instruction[bf.ip].c)
+			bf.decrement(instruction[bf.ip].additionalData)
 		case "+":
-			bf.increment(instruction[bf.ip].c)
+			bf.increment(instruction[bf.ip].additionalData)
 		case "<":
-			bf.skate(-instruction[bf.ip].c)
+			bf.skate(-instruction[bf.ip].additionalData)
 		case ">":
-			bf.skate(instruction[bf.ip].c)
+			bf.skate(instruction[bf.ip].additionalData)
 		case ",":
-			bf.read(instruction[bf.ip].c)
+			bf.read(instruction[bf.ip].additionalData)
 		case ".":
-			bf.write(instruction[bf.ip].c)
+			bf.write(instruction[bf.ip].additionalData)
 		case "[":
 			if bf.val() == 0 {
-				bf.goTo(instruction[bf.ip].c)
+				bf.goTo(instruction[bf.ip].additionalData)
 				continue
 			}
 		case "]":
 			if bf.val() != 0 {
-				bf.goTo(instruction[bf.ip].c)
+				bf.goTo(instruction[bf.ip].additionalData)
 				continue
 			}
 		}
@@ -82,7 +83,7 @@ func (bf *BrainFuck) Run() error {
 	return bf.err
 }
 
-// curr method returns the position of current cursor in the memory
+// cur method returns the position of current cursor in the memory
 func (bf *BrainFuck) cur() int {
 	return bf.memory.cursor
 }

@@ -1,5 +1,7 @@
 package brainfuck
 
+// the successive integer constants for each operation in golang
+// IllegalToken is to identify any token out of brainFuck operations.
 const (
 	IllegalToken Token = iota
 	op_dec_dp          // <
@@ -10,27 +12,19 @@ const (
 	op_in              // ,
 	op_jmp_fwd         // [
 	op_jmp_bck         // ]
-
 )
 
-// special var to indicate end of stream.
+// EOF is for end of file (stream).
 var EOF = rune(-1)
 
-// Tok represents a lexical token type.
+// Token represents a lexical for the type of token.
 type Token int
 
 // Identifier represents a lexical tokens.
 type Identifier struct {
-	// the type of token.
+	// the type of the token.
 	token Token
 
-	// The literal value of the token(as parsed).
+	// The parsed value of the token.
 	Value string
-
-	// The rune used for string tokens
-	// Ending rune
-
-	// Used for numeric tokens.
-	// Number float64
-	// Unit   string
 }

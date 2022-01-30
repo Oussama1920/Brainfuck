@@ -4,18 +4,17 @@ import (
 	"io"
 )
 
-// RuneParser will parse tokens and pack them in instructions
-// initial state of the RuneParser is Parse method
+// RuneParser is to parse the tokens into instructions
 type RuneParser interface {
 	Parse() []*Instruction
 }
 
-// Instruction is an abstraction for an operation which machine can understand
-// id is one single instruction
-// c is complementary information about instruction like position or counts of occurrence
+// Instruction is the operation of our turing machine
+// id the instruction
+// c is the position of the bracket of loops or number of occuerence for other operation
 type Instruction struct {
-	id Identifier
-	c  int
+	id             Identifier
+	additionalData int
 }
 
 // Parser builds AST (abstract structure tree).
@@ -60,7 +59,7 @@ func (parser *Parser) Parse() []*Instruction {
 		case op_jmp_bck:
 			openLoop := parser.stack.Pop().(int)
 			closeLoop := parser.BuildInstruction(tok, openLoop)
-			parser.instruction[openLoop].c = closeLoop
+			parser.instruction[openLoop].additionalData = closeLoop
 		}
 
 	}
@@ -103,11 +102,11 @@ func (p *Parser) AddInstruction(t Identifier) int {
 }
 
 // buildInst creates a instruction from the given literals.
-func (p *Parser) BuildInstruction(id Identifier, c int) int {
+func (p *Parser) BuildInstruction(id Identifier, additionalData int) int {
 	// build instruction
 	instruction := &Instruction{
-		id: id,
-		c:  c,
+		id:             id,
+		additionalData: additionalData,
 	}
 	// add inst to instruction list
 	p.instruction = append(p.instruction, instruction)
