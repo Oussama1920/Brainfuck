@@ -24,11 +24,10 @@ func TestStack_Push(t *testing.T) {
 }
 func TestStack_Pop(t *testing.T) {
 	for _, tt := range []struct {
-		input        []int
-		wantedLength int
+		input []int
 	}{
-		{testPushPop1, 5},
-		{testPushPop2, 8},
+		{testPushPop1},
+		{testPushPop2},
 	} {
 		s := Stack{}
 		for _, item := range tt.input {
