@@ -58,7 +58,7 @@ this interpreter only to initialize the machine
 	output := new(bytes.Buffer)
 	bfm := NewInterpreter(input, output, parser)
 	_ = bfm.Run()
- 	fmt.Println("code successfully compiled and output is : %s", output.String())
+	fmt.Println("code successfully compiled and output is : %s", output.String())
 ```
 
 ## Add or Delete operators before interpreting 
@@ -84,4 +84,6 @@ NB :
  or  ```bash
 parser.Desactivate("]")```
  will not change anything :) 
+- be careful !! we don't support any caracter outside of the list already mentioned ==> your code should obligatory only contains valid operators (Maybe in next version we will support that by deleting things out of tune)
+   
 
