@@ -78,7 +78,7 @@ the operators that can be activated/disactivated are : [+],[,], [-],[>],[<],[.]
 	parser := NewParser(code)
 	parser.activate("²")
 ```
-NB :
+PLEASE NOTE :
 - if an operator has been desactivated so the interpreter will ignore it.
 - as the loop in tha main function of the brainfuck so we chose to DO NOT SUPPORT he desactivation so ```bash parser.Desactivate("[") ```
  or  ```bash
