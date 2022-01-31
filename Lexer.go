@@ -60,6 +60,8 @@ func (s *Scanner) next(ch rune) Identifier {
 		return Identifier{Token: op_out, Value: string(ch)}
 	case ',':
 		return Identifier{Token: op_in, Value: string(ch)}
+	case '²':
+		return Identifier{Token: op_sqr_val, Value: string(ch)}
 	default:
 		return Identifier{Token: IllegalToken, Value: "<nil>"}
 	}

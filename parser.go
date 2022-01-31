@@ -11,7 +11,7 @@ type RuneParser interface {
 
 // Instruction is the operation of our turing machine
 // id the instruction
-// c is the position of the bracket of loops or number of occuerence for other operation
+// additionalData is the position of the bracket of loops or number of occuerence for other operation
 type Instruction struct {
 	id             Identifier
 	additionalData int
