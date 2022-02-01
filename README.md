@@ -28,6 +28,12 @@ the book : writing an INTERPRETER in go https://edu.anarcho-copy.org/Programming
 ```bash
 go test
 ```
+## to run component_tests
+```bash
+go install github.com/cucumber/godog/cmd/godog@v0.12.0
+cd component_tests
+godog
+```
 ## to use 
 - firstly you have to create an instance of a parser using io.Reader input 
 ```bashs
@@ -50,15 +56,26 @@ this interpreter only to initialize the machine
 ```
 ## full example  
  ```bashs
+	import (
+	"bytes"
+	"fmt"
+	"io/ioutil"
+	"strings"
+
+	bf "github.com/Oussama1920/Brainfuck"
+	)
+	func main() {
+
 	HelloWordInBrainFuck := `>++++++++[<+++++++++>-]<.>++++[<+++++++>-]<+.+++++++..+++.>>++++++[<+++++++>-]<++.------------.>++++++[<+++++++++>-]<+.<.+++.------.--------.>>>++++[<++++++++>-]<+`
 
 	code := strings.NewReader(HelloWordInBrainFuck)
-	parser := NewParser(code)
+	parser := bf.NewParser(code)
 	input := new(bytes.Buffer)
 	output := new(bytes.Buffer)
-	bfm := NewInterpreter(input, output, parser)
+	bfm := bf.NewInterpreter(input, output, parser)
 	_ = bfm.Run()
 	fmt.Println("code successfully compiled and output is : %s", output.String())
+	}
 ```
 
 ## Add or Delete operators before interpreting 
