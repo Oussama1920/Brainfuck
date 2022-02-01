@@ -56,8 +56,7 @@ this interpreter only to initialize the machine
 ```
 ## full example  
  ```bashs
-
- 	import (
+	import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
