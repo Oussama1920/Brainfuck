@@ -10,8 +10,6 @@ import (
 	"github.com/cucumber/godog"
 )
 
-var x = bf.BrainFuck{}
-
 type testClient struct {
 	brainFuck        *bf.BrainFuck
 	output           *bytes.Buffer
